@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
   const dobInput = document.getElementById("dob");
-  const dobError = document.getElementById("dob-error");
+  const form = document.getElementById("user-form");
 
   const today = new Date();
   const minAge = 18;
@@ -20,64 +20,69 @@ document.addEventListener("DOMContentLoaded", function () {
   dobInput.min = minDate.toISOString().split("T")[0];
   dobInput.max = maxDate.toISOString().split("T")[0];
 
-  dobInput.addEventListener("change", function () {
+  dobInput.addEventListener("submit", function () {
     const selectedDate = new Date(dobInput.value);
     if (selectedDate < minDate || selectedDate > maxDate) {
-      dobError.textContent = "Age must be between 18 and 55 years.";
-      dobInput.setCustomValidity("Invalid age");
+      dobInput.setCustomValidity("Age must be between 18 and 55 years.");
     } else {
-      dobError.textContent = "";
       dobInput.setCustomValidity("");
     }
+    dobInput.reportValidity(); // Shows pop-up validation
   });
-});
 
-const retrieveEntries = () => {
-  let entries = localStorage.getItem("user-entries");
-  return entries ? JSON.parse(entries) : [];
-};
+  const retrieveEntries = () => {
+    let entries = localStorage.getItem("user-entries");
+    return entries ? JSON.parse(entries) : [];
+  };
 
-let userEntries = retrieveEntries();
+  let userEntries = retrieveEntries();
 
-const displayEntries = () => {
-  const entries = retrieveEntries();
-  const tableRows = entries
-    .map((entry) => {
-      return `
-            <tr>
-                <td>${entry.name}</td>
-                <td>${entry.email}</td>
-                <td>${entry.password}</td>
-                <td>${entry.dob}</td>
-                <td>${entry.acceptedTerms ? "true" : "false"}</td>
-            </tr>
-        `;
-    })
-    .join("\n");
+  const displayEntries = () => {
+    const entries = retrieveEntries();
+    const tableRows = entries
+      .map((entry) => {
+        return `
+                <tr>
+                    <td>${entry.name}</td>
+                    <td>${entry.email}</td>
+                    <td>${entry.password}</td>
+                    <td>${entry.dob}</td>
+                    <td>${entry.acceptedTerms ? "true" : "false"}</td>
+                </tr>
+            `;
+      })
+      .join("\n");
 
-  document.getElementById("entriesTable").innerHTML = tableRows;
-};
+    document.getElementById("entriesTable").innerHTML = tableRows;
+  };
 
-const saveUserForm = (event) => {
-  event.preventDefault();
-  const name = document.getElementById("name").value;
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-  const dob = document.getElementById("dob").value;
-  const acceptedTerms = document.getElementById("terms").checked;
+  const saveUserForm = (event) => {
+    event.preventDefault();
 
-  const entry = { name, email, password, dob, acceptedTerms };
-  userEntries.push(entry);
-  localStorage.setItem("user-entries", JSON.stringify(userEntries));
+    const name = document.getElementById("name").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+    const dob = document.getElementById("dob").value;
+    const acceptedTerms = document.getElementById("terms").checked;
 
+    if (!validateEmail(email)) {
+      alert("Please enter a valid email address.");
+      return;
+    }
+
+    const entry = { name, email, password, dob, acceptedTerms };
+    userEntries.push(entry);
+    localStorage.setItem("user-entries", JSON.stringify(userEntries));
+
+    displayEntries();
+    form.reset();
+  };
+
+  const validateEmail = (email) => {
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return emailPattern.test(email);
+  };
+
+  form.addEventListener("submit", saveUserForm);
   displayEntries();
-  document.getElementById("user-form").reset();
-};
-
-document.getElementById("user-form").addEventListener("submit", saveUserForm);
-displayEntries();
-
-window.addEventListener("beforeunload", () => {
-  localStorage.clear();
 });
-
