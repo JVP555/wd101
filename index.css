@@ -54,10 +54,7 @@ button {
     width: 100%;
     font-size: 16px;
 }
-.form-group input[type="date"] {
-    position: relative;
-    left:22px;
-}
+
 .form-group input[type="checkbox"] {
     position: relative;
     left:-122px;
@@ -85,10 +82,4 @@ button {
     border: 1px solid #ddd;
     padding: 8px;
     text-align: center;
-}
-
-.error-message {
-    color: red;
-    font-size: 14px;
-    margin-left: 10px;
 }
