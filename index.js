@@ -23,7 +23,27 @@ document.addEventListener("DOMContentLoaded", function () {
   dobInput.addEventListener("submit", function () {
     const selectedDate = new Date(dobInput.value);
     if (selectedDate < minDate || selectedDate > maxDate) {
-      dobInput.setCustomValidity("Age must be between 18 and 55 years.");
+      if (selectedDate > maxDate) {
+        dobInput.setCustomValidity(
+          "The value must be atleast " +
+            maxDate.toISOString().split("T")[0].split("-")[2] +
+            "/" +
+            maxDate.toISOString().split("T")[0].split("-")[1] +
+            "/" +
+            maxDate.toISOString().split("T")[0].split("-")[0] +
+            " or earlier."
+        );
+      } else {
+        dobInput.setCustomValidity(
+          "The value must be atleast " +
+            minDate.toISOString().split("T")[0].split("-")[2] +
+            "/" +
+            minDate.toISOString().split("T")[0].split("-")[1] +
+            "/" +
+            minDate.toISOString().split("T")[0].split("-")[0] +
+            " or later."
+        );
+      }
     } else {
       dobInput.setCustomValidity("");
     }
@@ -77,12 +97,6 @@ document.addEventListener("DOMContentLoaded", function () {
     displayEntries();
     form.reset();
   };
-
-  const validateEmail = (email) => {
-    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    return emailPattern.test(email);
-  };
-
   form.addEventListener("submit", saveUserForm);
   displayEntries();
 });
