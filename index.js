@@ -20,6 +20,7 @@ document.addEventListener("DOMContentLoaded", function () {
   dobInput.min = minDate.toISOString().split("T")[0];
   dobInput.max = maxDate.toISOString().split("T")[0];
 
+  // Format date to yyyy/mm/dd
   const formatDate = (date) => {
     const d = new Date(date);
     const year = d.getFullYear();
@@ -30,16 +31,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
   form.addEventListener("submit", function (event) {
     const selectedDate = new Date(dobInput.value);
-    if (selectedDate < minDate || selectedDate > maxDate) {
+    
+    if (selectedDate < minDate || selectedDate > maxDate || isNaN(selectedDate)) {
       event.preventDefault();
+      
       if (selectedDate > maxDate) {
         dobInput.setCustomValidity(
-          "The date must be " + formatDate(maxDate) + " or earlier."
+          `The date must be ${formatDate(maxDate)} or earlier.`
+        );
+      } else if (selectedDate < minDate) {
+        dobInput.setCustomValidity(
+          `The date must be ${formatDate(minDate)} or later.`
         );
       } else {
-        dobInput.setCustomValidity(
-          "The date must be " + formatDate(minDate) + " or later."
-        );
+        dobInput.setCustomValidity("Invalid date format. Use yyyy/mm/dd.");
       }
     } else {
       dobInput.setCustomValidity("");
@@ -48,6 +53,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 });
 
+// Local Storage Functions
 const retrieveEntries = () => {
   let entries = localStorage.getItem("user-entries");
   return entries ? JSON.parse(entries) : [];
@@ -104,5 +110,4 @@ const saveUserForm = (event) => {
   document.getElementById("user-form").reset();
 };
 
-document.getElementById("user-form").addEventListener("submit", saveUserForm);
-displayEntries();
+document.getElementById("user-form").addEventListener("submit", saveUserForm
