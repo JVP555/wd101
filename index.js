@@ -110,4 +110,4 @@ const saveUserForm = (event) => {
   document.getElementById("user-form").reset();
 };
 
-document.getElementById("user-form").addEventListener("submit", saveUserForm
+document.getElementById("user-form").addEventListener("submit", saveUserForm);
