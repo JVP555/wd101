@@ -20,21 +20,25 @@ document.addEventListener("DOMContentLoaded", function () {
   dobInput.min = minDate.toISOString().split("T")[0];
   dobInput.max = maxDate.toISOString().split("T")[0];
 
+  const formatDate = (date) => {
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${year}/${month}/${day}`;
+  };
+
   form.addEventListener("submit", function (event) {
     const selectedDate = new Date(dobInput.value);
     if (selectedDate < minDate || selectedDate > maxDate) {
       event.preventDefault();
       if (selectedDate > maxDate) {
         dobInput.setCustomValidity(
-          "The date must be " +
-            maxDate.toISOString().split("T")[0].split("-").reverse().join("/") +
-            " or earlier."
+          "The date must be " + formatDate(maxDate) + " or earlier."
         );
       } else {
         dobInput.setCustomValidity(
-          "The date must be " +
-            minDate.toISOString().split("T")[0].split("-").reverse().join("/") +
-            " or later."
+          "The date must be " + formatDate(minDate) + " or later."
         );
       }
     } else {
@@ -71,6 +75,9 @@ const displayEntries = () => {
 };
 
 const validateEmail = (email) => {
+  if (email !== email.toLowerCase()) {
+    return false;
+  }
   const re = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/;
   return re.test(email);
 };
