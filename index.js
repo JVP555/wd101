@@ -12,13 +12,12 @@ document.addEventListener("DOMContentLoaded", function () {
   dobInput.min = minDate.toISOString().split("T")[0];
   dobInput.max = maxDate.toISOString().split("T")[0];
 
-  // Format date to yyyy/mm/dd
   const formatDate = (date) => {
     const d = new Date(date);
     const year = d.getFullYear();
     const month = String(d.getMonth() + 1).padStart(2, "0");
     const day = String(d.getDate()).padStart(2, "0");
-    return `${year}/${month}/${day}`;
+    return `${year}-${month}-${day}`;
   };
 
   const retrieveEntries = () => {
@@ -47,35 +46,43 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("entriesTable").innerHTML = tableRows;
   };
 
-  const validateEmail = (email) => {
+  const validateEmail = (emailInput) => {
     const re = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/;
-    return re.test(email);
+    if (!re.test(emailInput.value)) {
+      emailInput.setCustomValidity("Please enter a valid lowercase email address.");
+    } else {
+      emailInput.setCustomValidity("");
+    }
   };
 
   const saveUserForm = (event) => {
-    event.preventDefault(); // Prevents form from refreshing the page
+    event.preventDefault();
 
     const name = document.getElementById("name").value.trim();
-    const email = document.getElementById("email").value.trim();
+    const emailInput = document.getElementById("email");
     const password = document.getElementById("password").value;
     const dob = document.getElementById("dob").value;
     const acceptedTerms = document.getElementById("terms").checked;
 
-    // Email validation
-    if (!validateEmail(email)) {
-      alert("Please enter a valid lowercase email address.");
+    // Email validation with HTML-like error
+    validateEmail(emailInput);
+    if (!emailInput.checkValidity()) {
+      emailInput.reportValidity();
       return;
     }
 
     // DOB validation
     const selectedDate = new Date(dob);
     if (selectedDate < minDate || selectedDate > maxDate) {
-      alert(`Date of birth must be between ${formatDate(minDate)} and ${formatDate(maxDate)}.`);
+      dobInput.setCustomValidity(`Date of birth must be between ${formatDate(minDate)} and ${formatDate(maxDate)}.`);
+      dobInput.reportValidity();
       return;
+    } else {
+      dobInput.setCustomValidity("");
     }
 
     // Store entry in localStorage
-    const entry = { name, email, password, dob, acceptedTerms };
+    const entry = { name, email: emailInput.value, password, dob, acceptedTerms };
     userEntries.push(entry);
     localStorage.setItem("user-entries", JSON.stringify(userEntries));
 
