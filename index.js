@@ -64,12 +64,16 @@ document.addEventListener("DOMContentLoaded", function () {
     const dob = document.getElementById("dob").value;
     const acceptedTerms = document.getElementById("terms").checked;
 
-    // Email validation with HTML-like error
+    // Email validation
     validateEmail(emailInput);
+
     if (!emailInput.checkValidity()) {
       emailInput.reportValidity();
-      return;
+      return; 
     }
+
+    // Clear lingering validation message before saving
+    emailInput.setCustomValidity("");
 
     // DOB validation
     const selectedDate = new Date(dob);
