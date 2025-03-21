@@ -48,10 +48,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const validateEmail = (emailInput) => {
     const re = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/;
+
+    // Validate lowercase email
     if (!re.test(emailInput.value)) {
       emailInput.setCustomValidity("Please enter a valid lowercase email address.");
+      emailInput.reportValidity();
+      return false; // Prevent form submission
     } else {
-      emailInput.setCustomValidity("");
+      emailInput.setCustomValidity(""); // Clear lingering error
+      return true;  // Allow form submission
     }
   };
 
@@ -65,15 +70,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const acceptedTerms = document.getElementById("terms").checked;
 
     // Email validation
-    validateEmail(emailInput);
-
-    if (!emailInput.checkValidity()) {
-      emailInput.reportValidity();
-      return; 
+    if (!validateEmail(emailInput)) {
+      return;  // Stop submission if email is invalid
     }
-
-    // Clear lingering validation message before saving
-    emailInput.setCustomValidity("");
 
     // DOB validation
     const selectedDate = new Date(dob);
@@ -85,7 +84,7 @@ document.addEventListener("DOMContentLoaded", function () {
       dobInput.setCustomValidity("");
     }
 
-    // Store entry in localStorage
+    // Save form data to localStorage
     const entry = { name, email: emailInput.value, password, dob, acceptedTerms };
     userEntries.push(entry);
     localStorage.setItem("user-entries", JSON.stringify(userEntries));
