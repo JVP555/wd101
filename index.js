@@ -79,16 +79,6 @@ document.addEventListener("DOMContentLoaded", function () {
       dobInput.setCustomValidity("");
     }
   });
-
-  // Password validation (minimum 6 characters)
-  passwordInput.addEventListener("input", () => {
-    if (passwordInput.value.length < 6) {
-      passwordInput.setCustomValidity("Password must be at least 6 characters long.");
-    } else {
-      passwordInput.setCustomValidity("");
-    }
-  });
-
   // Terms validation
   termsInput.addEventListener("change", () => {
     if (!termsInput.checked) {
