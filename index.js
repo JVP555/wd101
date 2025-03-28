@@ -57,11 +57,11 @@ document.addEventListener("DOMContentLoaded", function () {
   
     // Check for missing @ symbol
     if (!value.includes("@")) {
-      emailInput.setCustomValidity("Email must contain '@'.");
+      emailInput.setCustomValidity("Invalid Email Address.");
     } 
     // Check for lowercase format
     else if (!/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(value)) {
-      emailInput.setCustomValidity("Invalid format. Use lowercase only.");
+      emailInput.setCustomValidity("Invalid Email Address.");
     } 
     // Clear validation if valid
     else {
