@@ -51,22 +51,33 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("entriesTable").innerHTML = tableRows;
   };
 
-  // Validate lowercase email with setCustomValidity
+  // Extended email validation (HTML5 handles @ check)
   emailInput.addEventListener("input", () => {
     const value = emailInput.value;
-  
-    // Check for missing @ symbol
-    if (!value.includes("@")) {
-      emailInput.setCustomValidity("Invalid Email Address.");
-    } 
-    // Check for lowercase format
-    else if (!/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(value)) {
-      emailInput.setCustomValidity("Invalid Email Address.");
-    } 
-    // Clear validation if valid
-    else {
-      emailInput.setCustomValidity("");
+
+    const invalidCases = [
+      { regex: /@.*@/, message: "Only one '@' is allowed." },
+      { regex: /\.\./, message: "Consecutive dots are not allowed." },
+      { regex: /^\.|\.@|@\.|\.$/, message: "Invalid dot placement." },
+      { regex: /@.*-/, message: "Hyphen not allowed at start or end of domain." },
+      { regex: /@.*_/, message: "Underscore is not allowed in domain names." },
+      { regex: /@[a-z0-9-]+\.[a-z]{1}$/, message: "TLD must be at least 2 characters." }
+    ];
+
+    let errorMessage = "";
+
+    if (!/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(value)) {
+      errorMessage = "Invalid format. Use lowercase only.";
+    } else {
+      for (const { regex, message } of invalidCases) {
+        if (regex.test(value)) {
+          errorMessage = message;
+          break;
+        }
+      }
     }
+
+    emailInput.setCustomValidity(errorMessage);
   });
 
   // Age validation using setCustomValidity
@@ -89,6 +100,7 @@ document.addEventListener("DOMContentLoaded", function () {
       dobInput.setCustomValidity("");
     }
   });
+
   // Terms validation
   termsInput.addEventListener("change", () => {
     if (!termsInput.checked) {
