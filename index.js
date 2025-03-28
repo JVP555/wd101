@@ -53,10 +53,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Validate lowercase email with setCustomValidity
   emailInput.addEventListener("input", () => {
-    const re = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/; // lowercase only
-    if (!re.test(emailInput.value)) {
-      emailInput.setCustomValidity("Invalid email format. Use lowercase only.");
-    } else {
+    const value = emailInput.value;
+  
+    // Check for missing @ symbol
+    if (!value.includes("@")) {
+      emailInput.setCustomValidity("Email must contain '@'.");
+    } 
+    // Check for lowercase format
+    else if (!/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(value)) {
+      emailInput.setCustomValidity("Invalid format. Use lowercase only.");
+    } 
+    // Clear validation if valid
+    else {
       emailInput.setCustomValidity("");
     }
   });
@@ -74,7 +82,9 @@ document.addEventListener("DOMContentLoaded", function () {
       (age === minAge && ageMonthDiff < 0) ||
       (age === minAge && ageMonthDiff === 0 && ageDayDiff < 0)
     ) {
-      dobInput.setCustomValidity(`Age must be between ${minAge} and ${maxAge} years.`);
+      dobInput.setCustomValidity(
+        `Age must be between ${minAge} and ${maxAge} years.`
+      );
     } else {
       dobInput.setCustomValidity("");
     }
