@@ -1,6 +1,9 @@
 document.addEventListener("DOMContentLoaded", function () {
-  const dobInput = document.getElementById("dob");
   const form = document.getElementById("user-form");
+  const dobInput = document.getElementById("dob");
+  const emailInput = document.getElementById("email");
+  const passwordInput = document.getElementById("password");
+  const termsInput = document.getElementById("terms");
 
   const today = new Date();
   const minAge = 18;
@@ -48,30 +51,19 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("entriesTable").innerHTML = tableRows;
   };
 
-  // Validate lowercase email
-  const validateEmail = (email) => {
+  // Validate lowercase email with setCustomValidity
+  emailInput.addEventListener("input", () => {
     const re = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/; // lowercase only
-    return re.test(email);
-  };
-
-  // Save form data
-  const saveUserForm = (event) => {
-    event.preventDefault();
-
-    const name = document.getElementById("name").value.trim();
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value;
-    const dob = document.getElementById("dob").value;
-    const acceptedTerms = document.getElementById("terms").checked;
-
-    // Validate email
-    if (!validateEmail(email)) {
-      alert("Please enter a valid lowercase email address.");
-      return;
+    if (!re.test(emailInput.value)) {
+      emailInput.setCustomValidity("Invalid email format. Use lowercase only.");
+    } else {
+      emailInput.setCustomValidity("");
     }
+  });
 
-    // Age validation
-    const birthDate = new Date(dob);
+  // Age validation using setCustomValidity
+  dobInput.addEventListener("input", () => {
+    const birthDate = new Date(dobInput.value);
     const age = today.getFullYear() - birthDate.getFullYear();
     const ageMonthDiff = today.getMonth() - birthDate.getMonth();
     const ageDayDiff = today.getDate() - birthDate.getDate();
@@ -82,11 +74,47 @@ document.addEventListener("DOMContentLoaded", function () {
       (age === minAge && ageMonthDiff < 0) ||
       (age === minAge && ageMonthDiff === 0 && ageDayDiff < 0)
     ) {
-      alert(`Age must be between ${minAge} and ${maxAge} years.`);
+      dobInput.setCustomValidity(`Age must be between ${minAge} and ${maxAge} years.`);
+    } else {
+      dobInput.setCustomValidity("");
+    }
+  });
+
+  // Password validation (minimum 6 characters)
+  passwordInput.addEventListener("input", () => {
+    if (passwordInput.value.length < 6) {
+      passwordInput.setCustomValidity("Password must be at least 6 characters long.");
+    } else {
+      passwordInput.setCustomValidity("");
+    }
+  });
+
+  // Terms validation
+  termsInput.addEventListener("change", () => {
+    if (!termsInput.checked) {
+      termsInput.setCustomValidity("You must accept the terms and conditions.");
+    } else {
+      termsInput.setCustomValidity("");
+    }
+  });
+
+  // Save form data
+  const saveUserForm = (event) => {
+    event.preventDefault();
+
+    if (!form.checkValidity()) {
+      form.reportValidity();
       return;
     }
 
-    const entry = { name, email, password, dob, acceptedTerms };
+    const entry = {
+      name: document.getElementById("name").value.trim(),
+      email: emailInput.value.trim(),
+      password: passwordInput.value,
+      dob: dobInput.value,
+      acceptedTerms: termsInput.checked,
+    };
+
     userEntries.push(entry);
     localStorage.setItem("user-entries", JSON.stringify(userEntries));
 
