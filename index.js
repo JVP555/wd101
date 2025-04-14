@@ -50,34 +50,39 @@ document.addEventListener("DOMContentLoaded", function () {
 
     document.getElementById("entriesTable").innerHTML = tableRows;
   };
-
-  // Extended email validation (HTML5 handles @ check)
+  //correcting email validity
   emailInput.addEventListener("input", () => {
-    const value = emailInput.value;
+    const email = emailInput.value;
 
-    const invalidCases = [
-      { regex: /@.*@/, message: "Only one '@' is allowed." },
-      { regex: /\.\./, message: "Consecutive dots are not allowed." },
-      { regex: /^\.|\.@|@\.|\.$/, message: "Invalid dot placement." },
-      { regex: /@.*-/, message: "Hyphen not allowed at start or end of domain." },
-      { regex: /@.*_/, message: "Underscore is not allowed in domain names." },
-      { regex: /@[a-z0-9-]+\.[a-z]{1}$/, message: "TLD must be at least 2 characters." }
-    ];
+    const strictEmailRegex =
+      /^(?!.*\.\.)(?!.*\.$)(?!^\.)[a-z0-9._%+-]+@[a-z0-9-]+(\.[a-z0-9-]+)*\.[a-z]{2,}$/;
 
-    let errorMessage = "";
+    // Checks:
+    // - Only lowercase
+    // - No leading/trailing/consecutive dots in local part
+    // - Valid domain and TLD
+    // - No underscores in domain
+    // - No domain part starting/ending with hyphen
 
-    if (!/^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(value)) {
-      errorMessage = "Invalid format..";
+    const domainPart = email.split("@")[1];
+    const domainValid = domainPart
+      ? domainPart
+          .split(".")
+          .every(
+            (label) =>
+              /^[a-z0-9-]+$/.test(label) &&
+              !/^[-]|[-]$/.test(label) &&
+              !label.includes("_")
+          )
+      : false;
+
+    if (!strictEmailRegex.test(email) || !domainValid) {
+      emailInput.setCustomValidity(
+        "Invalid email format. Use lowercase letters only and avoid symbols like '__', '..', or domain errors."
+      );
     } else {
-      for (const { regex, message } of invalidCases) {
-        if (regex.test(value)) {
-          errorMessage = message;
-          break;
-        }
-      }
+      emailInput.setCustomValidity("");
     }
-
-    emailInput.setCustomValidity(errorMessage);
   });
 
   // Age validation using setCustomValidity
