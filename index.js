@@ -50,19 +50,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
     document.getElementById("entriesTable").innerHTML = tableRows;
   };
-  //correcting email validity
+
+  // Correct email validation
   emailInput.addEventListener("input", () => {
     const email = emailInput.value;
 
     const strictEmailRegex =
       /^(?!.*\.\.)(?!.*\.$)(?!^\.)[a-z0-9._%+-]+@[a-z0-9-]+(\.[a-z0-9-]+)*\.[a-z]{2,}$/;
-
-    // Checks:
-    // - Only lowercase
-    // - No leading/trailing/consecutive dots in local part
-    // - Valid domain and TLD
-    // - No underscores in domain
-    // - No domain part starting/ending with hyphen
 
     const domainPart = email.split("@")[1];
     const domainValid = domainPart
@@ -76,11 +70,13 @@ document.addEventListener("DOMContentLoaded", function () {
           )
       : false;
 
+    // If email is invalid
     if (!strictEmailRegex.test(email) || !domainValid) {
       emailInput.setCustomValidity(
         "Invalid email format. Use lowercase letters only and avoid symbols like '__', '..', or domain errors."
       );
     } else {
+      // Clear custom validity if email is valid
       emailInput.setCustomValidity("");
     }
   });
